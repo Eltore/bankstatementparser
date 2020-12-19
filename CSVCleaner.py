@@ -9,7 +9,7 @@ specialcases = {'Sefay': 'Pizzeria Online', 'Ya': 'Apteekki', 'Aalto': 'AYY', 'K
 
 
 def readcsv():
-    with open('export.csv') as csvFile:
+    with open('data/export.csv') as csvFile:
         csvreader = csv.reader(csvFile, delimiter=';')
         modifiedcsv = []
         linecount = 0
