@@ -14,13 +14,11 @@ def readcsv():
         csvreader = csv.reader(csvFile, delimiter=';')
         modifiedcsv = []
         linecount = 0
-        moneygone = 0
-        moneyin = 0
 
         for row in csvreader:
             if linecount == 0:
-                print(f'Column names are \t{row[1]} | {row[2]} | {row[5]}')
-                linestoadd = [row[1], row[2], row[5]]
+                print(f'Column names are \t{row[1]} | {row[2]} | {row[5]}')  # Change the row indexes to the preferred
+                linestoadd = [row[1], row[2], row[5]]                        # ones both in here and at namecleaner()
                 linecount += 1
 
                 modifiedcsv.append(linestoadd)
@@ -29,17 +27,13 @@ def readcsv():
                 linecount += 1
 
                 if row[2][0] == "-":
-                    numberline = row[2][1:].replace(',', '.')
-                    moneygone += float(numberline)
                     linestoadd = [row[1], row[2], row[5]]
                 elif row[2][0] == "+":
-                    numberline = row[2][1:].replace(',', '.')
-                    moneyin += float(numberline)
                     linestoadd = [row[1], row[2], row[4]]
 
                 modifiedcsv.append(linestoadd)
     writecsv(cleandata(modifiedcsv))
-    print(f'Processed {linecount} lines. Money out: {moneygone}. Money in: {moneyin}.')  # For debugging purposes
+    print(f'Processed {linecount} lines.')  # For debugging purposes
 
 
 def writecsv(data):
