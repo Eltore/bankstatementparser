@@ -1,6 +1,6 @@
 import csv
 
-
+# TODO: Consider having the names on a separate file that can be plugged in
 # Names that will be simplified, e.g. K Citymarket Espoo Sello -> K Citymarket
 listofnames = ['Alko', 'K Citymarket', 'Prisma', 'K Market', 'K Supermarket', 'Lidl', 'Burger King',
                'Alepa', 'Juho', 'Ella']
@@ -10,6 +10,11 @@ specialcases = {'Sefay': 'Pizzeria Online', 'Ya': 'Apteekki', 'Aalto': 'AYY', 'K
 
 
 def readcsv():
+    daterow = 1  # Change these three variables according to your csv file
+    amountrow = 2  # If these aren't in the same order in your csv, change
+    payeerow = 4  # the order in namecleaner(), too.
+    recipientrow = 5
+
     with open('.data/export.csv') as csvFile:
         csvreader = csv.reader(csvFile, delimiter=';')
         modifiedcsv = []
@@ -17,19 +22,19 @@ def readcsv():
 
         for row in csvreader:
             if linecount == 0:
-                print(f'Column names are \t{row[1]} | {row[2]} | {row[5]}')  # Change the row indexes to the preferred
-                linestoadd = [row[1], row[2], row[5]]                        # ones both in here and at namecleaner()
+                print(f'Column names are \t{row[daterow]} | {row[amountrow]} | {row[recipientrow]}')
+                linestoadd = [row[daterow], row[amountrow], row[recipientrow]]
                 linecount += 1
 
                 modifiedcsv.append(linestoadd)
             else:
-                print(f'\t{row[1]} | {row[2]} | {row[5]}.')
+                print(f'\t{row[daterow]} | {row[amountrow]} | {row[recipientrow]}.')
                 linecount += 1
 
-                if row[2][0] == "-":
-                    linestoadd = [row[1], row[2], row[5]]
-                elif row[2][0] == "+":
-                    linestoadd = [row[1], row[2], row[4]]
+                if row[amountrow][0] == "-":
+                    linestoadd = [row[daterow], row[amountrow], row[recipientrow]]
+                elif row[amountrow][0] == "+":
+                    linestoadd = [row[daterow], row[amountrow], row[payeerow]]
 
                 modifiedcsv.append(linestoadd)
     writecsv(cleandata(modifiedcsv))
