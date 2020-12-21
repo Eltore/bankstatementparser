@@ -57,9 +57,11 @@ def analyze(data):
             monetaryvalue = float(row[1][1:].replace(',', '.'))
             totalincome += monetaryvalue
 
-        for name in names.names:
-            if(row[2] == name):
-                categories[names.names[name]] += monetaryvalue
+        for name in names.namecategories:
+            if row[2] == name:
+                categories[names.namecategories[name]] += monetaryvalue
+
+    # TODO: Loop the categories instead of hardcoding them
     monthsummary = [(f'{data[0][0][3:5]}/{data[0][0][6:]}', f'{totalincome}', f'{totalspent}', f"{categories['Food']}",
                      f"{categories['Medicine']}", f"{categories['Rent']}", f"{categories['Subsidies']}")]
 
@@ -69,3 +71,5 @@ def analyze(data):
 csvdata = readcsv()
 monthdata = analyze(csvdata)
 writecsv(monthdata)
+
+# TODO: Re-read the now updated .csv and add moving averages and whatnot

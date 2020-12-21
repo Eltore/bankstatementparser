@@ -1,12 +1,5 @@
 import csv
-
-# TODO: Consider having the names on a separate file that can be plugged in
-# Names that will be simplified, e.g. K Citymarket Espoo Sello -> K Citymarket
-listofnames = ['Alko', 'K Citymarket', 'Prisma', 'K Market', 'K Supermarket', 'Lidl', 'Burger King',
-               'Alepa', 'Juho', 'Ella']
-
-# Names that will be changed to better reflect what they are
-specialcases = {'Sefay': 'Pizzeria Online', 'Ya': 'Apteekki', 'Aalto': 'AYY', 'Kansanel': 'Kela'}
+import names
 
 
 def readcsv():
@@ -58,13 +51,13 @@ def cleandata(data):
 
 
 def namecleaner(line):
-    for name in listofnames:
+    for name in names.listofnames:
         titlecaseline = line[2].title()
 
         if name in titlecaseline:
             return [line[0], line[1], name]
 
-    for k, v in specialcases.items():
+    for k, v in names.specialcases.items():
         titlecaseline = line[2].title()
 
         if k in titlecaseline:
