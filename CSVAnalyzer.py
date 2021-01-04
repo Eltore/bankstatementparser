@@ -1,10 +1,9 @@
 import csv
 import os.path
-from datetime import datetime
-
 import names
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 def readcsv():
@@ -84,8 +83,13 @@ if analyzeData == 1:
 def analyze():
     df = pd.read_csv('.data/analyzerOutput.csv', ';', index_col=0, parse_dates=True)
     print(df)
-    df.plot(y=['Total income', 'Total spent', 'Net income'])
-    plt.show()
+    # df.plot(y=['Total income', 'Total spent', 'Net income'])
+    # plt.show()
+    sns.set_theme()
+    sns.relplot(
+        data=df, kind='line',
+        x='date', y='Total income'
+    )
 
 
 analyze()
