@@ -1,6 +1,13 @@
 import csv
 import os.path
 import names
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import seaborn as sns
+
+sns.set_theme()
+
 
 def readcsv():
     with open('.data/output.csv') as csvFile:
@@ -33,7 +40,7 @@ def writecsv(data):
         print('Successfully added new data to the output file.')
     else:
         print("\nFile 'analyzerOutput.csv' could not be found. Creating a new one...")
-        data.insert(0, (['Date', 'Total income', 'Total spent', 'Food', 'Medicine', 'Rent', 'Subsidies']))
+        data.insert(0, (['Date', 'Total income', 'Total spent', 'Net income', 'Food', 'Medicine', 'Rent', 'Subsidies']))
 
         with open(outputpath, "w", newline='') as csv_file:
             writer = csv.writer(csv_file, delimiter=';')
@@ -42,7 +49,7 @@ def writecsv(data):
         print('Successfully created the output file.')
 
 
-def analyze(data):
+def addData(data):
     totalspent = 0
     totalincome = 0
     categories = {'Food': 0, 'Medicine': 0, 'Rent': 0, 'Subsidies': 0}
@@ -62,14 +69,65 @@ def analyze(data):
                 categories[names.namecategories[name]] += monetaryvalue
 
     # TODO: Loop the categories instead of hardcoding them
-    monthsummary = [(f'{data[0][0][3:5]}/{data[0][0][6:]}', f'{totalincome}', f'{totalspent}', f"{categories['Food']}",
-                     f"{categories['Medicine']}", f"{categories['Rent']}", f"{categories['Subsidies']}")]
+    netincome = totalincome - totalspent
+    monthsummary = [(f'{data[0][0][3:5]}/{data[0][0][6:]}', f'{totalincome:.2f}', f'{totalspent:.2f}',
+                     f'{netincome:.2f}', f"{categories['Food']}",
+                     f"{categories['Medicine']:.2f}", f"{categories['Rent']}", f"{categories['Subsidies']}")]
 
     return monthsummary
 
 
-csvdata = readcsv()
-monthdata = analyze(csvdata)
-writecsv(monthdata)
+analyzeData = 0  # input('Read new data from CSV before analyzing monthly data?\n0 = No\n1 = Yes\n')
+if analyzeData == 1:
+    csvdata = readcsv()
+    monthdata = addData(csvdata)
+    writecsv(monthdata)
 
-# TODO: Re-read the now updated .csv and add moving averages and whatnot
+
+def analyze():
+    df = pd.read_csv('.data/analyzerOutput.csv', ';', index_col=0, parse_dates=True)
+    print(df)
+    months = mdates.MonthLocator()  # every month
+    days = mdates.DayLocator()  # every month
+    dateFormat = mdates.DateFormatter('%m-%Y')
+
+    # Net income graph
+    df2 = df[['Total income', 'Total spent', 'Net income']]
+    df3 = pd.DataFrame(df2.stack()).reset_index()
+    df3.columns = ['Date', 'Type', 'Value']
+    print(df3)
+
+    g, ax = plt.subplots(figsize=(7, 5))
+
+    sns.lineplot(data=df3,
+                 x='Date', y='Value',
+                 hue='Type', ax=ax)
+
+    ax.xaxis.set_major_locator(months)
+    ax.xaxis.set_major_formatter(dateFormat)
+    ax.xaxis.set_minor_locator(days)
+
+    g.autofmt_xdate()
+
+    # Food graph  TODO: Fix date
+    df4 = df[['Food']]
+    df5 = pd.DataFrame(df4.stack()).reset_index()
+    df5.columns = ['Date', 'Type', 'Value']
+    print(df5)
+
+    g1, ax1 = plt.subplots(figsize=(7, 5))
+
+    sns.barplot(data=df5,
+                 x='Date', y='Value',
+                 hue='Type', ax=ax1)
+
+    ax1.xaxis.set_major_locator(months)
+    ax1.xaxis.set_major_formatter(dateFormat)
+    ax1.xaxis.set_minor_locator(days)
+
+    g1.autofmt_xdate()
+
+    plt.show()
+
+
+analyze()
