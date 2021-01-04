@@ -3,7 +3,10 @@ import os.path
 import names
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import seaborn as sns
+
+sns.set_theme()
 
 
 def readcsv():
@@ -67,8 +70,9 @@ def addData(data):
 
     # TODO: Loop the categories instead of hardcoding them
     netincome = totalincome - totalspent
-    monthsummary = [(f'{data[0][0][3:5]}/{data[0][0][6:]}', f'{totalincome:.2f}', f'{totalspent:.2f}', f'{netincome:.2f}', f"{categories['Food']}",
-                     f"{categories['Medicine']}", f"{categories['Rent']}", f"{categories['Subsidies']}")]
+    monthsummary = [(f'{data[0][0][3:5]}/{data[0][0][6:]}', f'{totalincome:.2f}', f'{totalspent:.2f}',
+                     f'{netincome:.2f}', f"{categories['Food']}",
+                     f"{categories['Medicine']:.2f}", f"{categories['Rent']}", f"{categories['Subsidies']}")]
 
     return monthsummary
 
@@ -83,13 +87,47 @@ if analyzeData == 1:
 def analyze():
     df = pd.read_csv('.data/analyzerOutput.csv', ';', index_col=0, parse_dates=True)
     print(df)
-    # df.plot(y=['Total income', 'Total spent', 'Net income'])
-    # plt.show()
-    sns.set_theme()
-    sns.relplot(
-        data=df, kind='line',
-        x='date', y='Total income'
-    )
+    months = mdates.MonthLocator()  # every month
+    days = mdates.DayLocator()  # every month
+    dateFormat = mdates.DateFormatter('%m-%Y')
+
+    # Net income graph
+    df2 = df[['Total income', 'Total spent', 'Net income']]
+    df3 = pd.DataFrame(df2.stack()).reset_index()
+    df3.columns = ['Date', 'Type', 'Value']
+    print(df3)
+
+    g, ax = plt.subplots(figsize=(7, 5))
+
+    sns.lineplot(data=df3,
+                 x='Date', y='Value',
+                 hue='Type', ax=ax)
+
+    ax.xaxis.set_major_locator(months)
+    ax.xaxis.set_major_formatter(dateFormat)
+    ax.xaxis.set_minor_locator(days)
+
+    g.autofmt_xdate()
+
+    # Food graph  TODO: Fix date
+    df4 = df[['Food']]
+    df5 = pd.DataFrame(df4.stack()).reset_index()
+    df5.columns = ['Date', 'Type', 'Value']
+    print(df5)
+
+    g1, ax1 = plt.subplots(figsize=(7, 5))
+
+    sns.barplot(data=df5,
+                 x='Date', y='Value',
+                 hue='Type', ax=ax1)
+
+    ax1.xaxis.set_major_locator(months)
+    ax1.xaxis.set_major_formatter(dateFormat)
+    ax1.xaxis.set_minor_locator(days)
+
+    g1.autofmt_xdate()
+
+    plt.show()
 
 
 analyze()
