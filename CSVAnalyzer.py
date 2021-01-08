@@ -92,7 +92,7 @@ def analyze():
     dateFormat = mdates.DateFormatter('%m-%Y')
 
     # Net income graph
-    df2 = df[['Total income', 'Total spent', 'Net income']]
+    df2 = df[['Total income', 'Total spent']]
     df3 = pd.DataFrame(df2.stack()).reset_index()
     df3.columns = ['Date', 'Type', 'Value']
     print(df3)
@@ -108,24 +108,6 @@ def analyze():
     ax.xaxis.set_minor_locator(days)
 
     g.autofmt_xdate()
-
-    # Food graph  TODO: Fix date
-    df4 = df[['Food']]
-    df5 = pd.DataFrame(df4.stack()).reset_index()
-    df5.columns = ['Date', 'Type', 'Value']
-    print(df5)
-
-    g1, ax1 = plt.subplots(figsize=(7, 5))
-
-    sns.barplot(data=df5,
-                 x='Date', y='Value',
-                 hue='Type', ax=ax1)
-
-    ax1.xaxis.set_major_locator(months)
-    ax1.xaxis.set_major_formatter(dateFormat)
-    ax1.xaxis.set_minor_locator(days)
-
-    g1.autofmt_xdate()
 
     plt.show()
 
