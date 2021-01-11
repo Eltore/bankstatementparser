@@ -27,11 +27,17 @@
     box-shadow: 1px 3px 3px #555555;
 }
 
-.rounded-div-table {
+.rounded-div-graph {
     background: #FFFFFF;
     border-radius: 25px;
-    padding: 20px;
+    padding: 20px 3px 17px;
     box-shadow: 1px 3px 3px #555555;
+}
+
+.graph-title {
+    margin-bottom: -1px;
+    margin-top: -1px;
+    padding-left: 17px;
 }
 
 .net-spending {

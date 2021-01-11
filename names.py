@@ -1,5 +1,20 @@
 # TODO: Choose a good way to store this information
 
+# TODO:
+# Tulot:
+# Me
+# Tuet
+# Muut
+#
+# Menot:
+# Ruoka
+# Sahkot, vesi
+# Vuokra
+# Kissat
+# Hupi
+
+
+
 # How each name should be categorized
 namecategories = {'K Citymarket': 'Food', 'Apteekki': 'Medicine', 'Kela': 'Subsidies'}
 

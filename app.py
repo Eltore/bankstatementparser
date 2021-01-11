@@ -15,29 +15,38 @@ df = pd.read_csv('.data/analyzerOutput.csv', ';', index_col=0, parse_dates=True)
 print(df)
 
 # Net spending information
-df_netspending = df
-df_netspending = df_netspending[['Net income']]
+df_netspending = df[['Net income']]
 df_netspending_transformed = pd.DataFrame(df_netspending.stack()).reset_index()
 df_netspending_transformed.columns = ['Date', 'Type', 'Value']
 print(df_netspending_transformed)
 
 # Spending graph
-df_spending = df
+df_spending = df.tail(6)
 df_spending = df_spending[['Total income', 'Total spent']]
 df_spending_transformed = pd.DataFrame(df_spending.stack()).reset_index()
 df_spending_transformed.columns = ['Date', 'Type', 'Value']
 print(df_spending_transformed)
 
+# Income table
+df_income_table = df.tail(3).T  # Grab the last 3 months and transpose the table
+df_income_table = df_income_table.reset_index()
+df_income_table = df_income_table.head(3)  # Grab the top three entries (i.e. income related)
+df_income_table.columns = ['Income', 'Sep', 'Oct', 'Nov']
+df_income_table['Avg'] = df_income_table.mean(axis=1).round(2)  # Calculate the averages for the three months
+df_income_table['Avg/y'] = df.tail(12).T.reset_index().mean(axis=1).round(2)  # Calculate averages for the whole year
+print(df_income_table)
+
 # Spending table
-df_transposed = df.T
+df_transposed = df.tail(3).T
 df_transposed = df_transposed.reset_index()
-df_transposed.columns = ['Category', 'Sep', 'Oct', 'Nov']
+df_transposed = df_transposed.tail(4)
+df_transposed.columns = ['Spending', 'Sep', 'Oct', 'Nov']
 df_transposed['Avg'] = df_transposed.mean(axis=1).round(2)
-df_transposed['Avg/y'] = df_transposed.mean(axis=1).round(2)  # TODO: Use real data instead of the same 3 months
+df_transposed['Avg/y'] = df.tail(12).T.reset_index().mean(axis=1).round(2)
 print(df_transposed)
 
 spending_graph = px.histogram(df_spending_transformed, x="Date", y="Value", color='Type',
-                              barmode='group', title='Net spending last 6 months')
+                              barmode='group', title='', nbins=6)
 spending_graph.update_layout(legend=dict(
     orientation="h",
     yanchor="bottom",
@@ -48,24 +57,25 @@ spending_graph.update_layout(legend=dict(
 spending_graph.update_layout(legend_title_text='')
 spending_graph.update_layout(yaxis_title='')
 spending_graph.update_layout(xaxis_title='')
+spending_graph.update_layout(margin=dict(t=0, b=0, l=0, r=30))
 
 app.layout = html.Div(children=[
     html.Div(
         className="app-header",
         children=[
-            html.Div('Personal Finance Dashboard v0.1.1', className="app-header--title")
+            html.Div('Personal Finance Dashboard v0.1.2', className="app-header--title")
         ]
     ),
     html.Div(className='row',  # Define the row element
              children=[
-                 html.Div(className='five columns div-user-controls', children=[
+                 html.Div(className='five columns div-user-controls', children=[  # Left side
                      html.Div(className='rounded-div negative-top-margin', children=[
                          html.H1('Hello, Juho!')
                          ]),
                      html.Div(className='rounded-div', children=[
                          html.Div('Your net income for last month was'),
                          html.Div(className='net-spending', children=[
-                            html.Div(f"+{df_netspending_transformed.at[0, 'Value']}")
+                            html.Div(f"+{df_netspending_transformed['Value'].iloc[-1]}")  # TODO: Cases for pos and neg
                          ]),
                          html.Div(className='total-amounts', children=[
                              html.Div(f"Total income: {df_spending_transformed.at[0, 'Value']} ",
@@ -74,28 +84,54 @@ app.layout = html.Div(children=[
                                       style={'width': '49%', 'display': 'inline-block'})
                          ])
                      ]),
-                     html.Div(className='rounded-div-table', children=[
+                     html.Div(className='rounded-div-graph', children=[
+                        html.H2('Net spending last 6 months', className='graph-title'),
                         dcc.Graph(id='spending_graph', figure=spending_graph)
                      ])
-                 ]),  # Define the left element
-                 html.Div(className='six columns div-for-charts bg-grey rounded-div add-top-margin', children=[
-                     dash_table.DataTable(
+                 ]),
+                 html.Div(className='six columns div-for-charts add-top-margin', children=[  # Right side
+                     html.Div(className='rounded-div', children=[
+                         html.Div(children=[
+                             dash_table.DataTable(
 
-                         id='table',
-                         columns=[{"name": i, "id": i}
-                                  for i in df_transposed.columns],
-                         data=df_transposed.to_dict('records'),
-                         style_cell=dict(textAlign='center', font_size='20px'),
-                         style_cell_conditional=[
-                             {
-                                 'if': {'column_id': 'Category'},
-                                 'textAlign': 'left'
-                             }
-                         ],
-                         style_header=dict(backgroundColor="#FFFFFF"),
-                         style_data=dict(backgroundColor="#FFFFFF")
-                     )
-                 ])  # Define the right element
+                                 id='income-table',
+                                 columns=[{"name": i, "id": i}
+                                          for i in df_income_table.columns],
+                                 data=df_income_table.to_dict('records'),
+                                 style_cell=dict(textAlign='center', font_size='20px'),
+                                 style_cell_conditional=[
+                                     {
+                                         'if': {'column_id': 'Income'},
+                                         'textAlign': 'left',
+                                         'width': '180px'
+                                     }
+                                 ],
+                                 style_header=dict(backgroundColor="#FFFFFF"),
+                                 style_data=dict(backgroundColor="#FFFFFF")
+                             )
+                         ]),
+                         html.Br(),
+                         html.Div(children=[
+                             dash_table.DataTable(
+
+                                 id='spending-table',
+                                 columns=[{"name": i, "id": i}
+                                          for i in df_transposed.columns],
+                                 data=df_transposed.to_dict('records'),
+                                 style_cell=dict(textAlign='center', font_size='20px'),
+                                 style_cell_conditional=[
+                                     {
+                                         'if': {'column_id': 'Spending'},
+                                         'textAlign': 'left',
+                                         'width': '180px'
+                                     }
+                                 ],
+                                 style_header=dict(backgroundColor="#FFFFFF"),
+                                 style_data=dict(backgroundColor="#FFFFFF")
+                             )
+                         ])
+                     ])
+                 ])
              ])
 ])
 
