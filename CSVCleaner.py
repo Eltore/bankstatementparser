@@ -8,7 +8,7 @@ def readcsv():
     payeerow = 4  # the order in namecleaner(), too.
     recipientrow = 5
 
-    with open('.data/export.csv') as csvFile:
+    with open('.data/CSVs/data.csv') as csvFile:
         csvreader = csv.reader(csvFile, delimiter=';')
         modifiedcsv = []
         linecount = 0

@@ -30,8 +30,10 @@ print(df_spending_transformed)
 # Income table
 df_income_table = df.tail(3).T  # Grab the last 3 months and transpose the table
 df_income_table = df_income_table.reset_index()
-df_income_table = df_income_table.head(3)  # Grab the top three entries (i.e. income related)
-df_income_table.columns = ['Income', 'Sep', 'Oct', 'Nov']
+df_income_table = df_income_table[3:6]  # Grab the income related entries
+df_copy = df.tail(3)
+df_income_table.columns = ['Income', pd.to_datetime(df_copy.index[0]).strftime('%b'), pd.to_datetime(df_copy.index[1])
+                           .strftime('%b'), pd.to_datetime(df_copy.index[2]).strftime('%b')]
 df_income_table['Avg'] = df_income_table.mean(axis=1).round(2)  # Calculate the averages for the three months
 df_income_table['Avg/y'] = df.tail(12).T.reset_index().mean(axis=1).round(2)  # Calculate averages for the whole year
 print(df_income_table)
@@ -39,8 +41,9 @@ print(df_income_table)
 # Spending table
 df_transposed = df.tail(3).T
 df_transposed = df_transposed.reset_index()
-df_transposed = df_transposed.tail(4)
-df_transposed.columns = ['Spending', 'Sep', 'Oct', 'Nov']
+df_transposed = df_transposed.tail(8)
+df_transposed.columns = ['Spending', pd.to_datetime(df_copy.index[0]).strftime('%b'), pd.to_datetime(df_copy.index[1])
+                         .strftime('%b'), pd.to_datetime(df_copy.index[2]).strftime('%b')]
 df_transposed['Avg'] = df_transposed.mean(axis=1).round(2)
 df_transposed['Avg/y'] = df.tail(12).T.reset_index().mean(axis=1).round(2)
 print(df_transposed)
@@ -53,11 +56,7 @@ spending_graph.update_layout(legend=dict(
     y=1.02,
     xanchor="right",
     x=1
-))
-spending_graph.update_layout(legend_title_text='')
-spending_graph.update_layout(yaxis_title='')
-spending_graph.update_layout(xaxis_title='')
-spending_graph.update_layout(margin=dict(t=0, b=0, l=0, r=30))
+), legend_title_text='', yaxis_title='', xaxis_title='', margin=dict(t=0, b=0, l=0, r=30))
 
 app.layout = html.Div(children=[
     html.Div(
@@ -71,11 +70,11 @@ app.layout = html.Div(children=[
                  html.Div(className='five columns div-user-controls', children=[  # Left side
                      html.Div(className='rounded-div negative-top-margin', children=[
                          html.H1('Hello, Juho!')
-                         ]),
+                     ]),
                      html.Div(className='rounded-div', children=[
                          html.Div('Your net income for last month was'),
                          html.Div(className='net-spending', children=[
-                            html.Div(f"+{df_netspending_transformed['Value'].iloc[-1]}")  # TODO: Cases for pos and neg
+                             html.Div(f"{df_netspending_transformed['Value'].iloc[-1]}")  # TODO: Cases for pos and neg
                          ]),
                          html.Div(className='total-amounts', children=[
                              html.Div(f"Total income: {df_spending_transformed.at[0, 'Value']} ",
@@ -85,8 +84,8 @@ app.layout = html.Div(children=[
                          ])
                      ]),
                      html.Div(className='rounded-div-graph', children=[
-                        html.H2('Net spending last 6 months', className='graph-title'),
-                        dcc.Graph(id='spending_graph', figure=spending_graph)
+                         html.H2('Net spending last 6 months', className='graph-title'),
+                         dcc.Graph(id='spending_graph', figure=spending_graph)
                      ])
                  ]),
                  html.Div(className='six columns div-for-charts add-top-margin', children=[  # Right side

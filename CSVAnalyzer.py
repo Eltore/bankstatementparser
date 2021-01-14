@@ -40,7 +40,8 @@ def writecsv(data):
         print('Successfully added new data to the output file.')
     else:
         print("\nFile 'analyzerOutput.csv' could not be found. Creating a new one...")
-        data.insert(0, (['Date', 'Total income', 'Total spent', 'Net income', 'Food', 'Medicine', 'Rent', 'Subsidies']))
+        data.insert(0, (['Date', 'Total income', 'Total spent', 'Net income', 'Personal', 'Subsidies', 'Other',
+                         'Food', 'Utilities', 'Rent', 'Medicine', 'Clothes', 'Pets', 'Fun', 'Other']))
 
         with open(outputpath, "w", newline='') as csv_file:
             writer = csv.writer(csv_file, delimiter=';')
@@ -52,32 +53,49 @@ def writecsv(data):
 def addData(data):
     totalspent = 0
     totalincome = 0
-    categories = {'Food': 0, 'Medicine': 0, 'Rent': 0, 'Subsidies': 0}
+    categories = {'Personal': 0, 'Subsidies': 0, 'Other': 0,
+                  'Food': 0, 'Utilities': 0, 'Rent': 0, 'Medicine': 0, 'Clothes': 0, 'Pets': 0, 'Fun': 0, 'Other ': 0}
 
     for row in data:
-        monetaryvalue = 0
+        monetary_value = 0
+        is_income = False
+        category_was_found = False
 
         if row[1][0] == "-":
-            monetaryvalue = float(row[1][1:].replace(',', '.'))
-            totalspent += monetaryvalue
+            monetary_value = float(row[1][1:].replace(',', '.'))
+            totalspent += monetary_value
         elif row[1][0] == "+":
-            monetaryvalue = float(row[1][1:].replace(',', '.'))
-            totalincome += monetaryvalue
+            monetary_value = float(row[1][1:].replace(',', '.'))
+            totalincome += monetary_value
+            is_income = True
 
         for name in names.namecategories:
             if row[2] == name:
-                categories[names.namecategories[name]] += monetaryvalue
+                categories[names.namecategories[name]] += monetary_value
+                category_was_found = True
+                break
 
-    # TODO: Loop the categories instead of hardcoding them
+        if not category_was_found:
+            if is_income:  # TODO: A better way to solve unknown names
+                categories['Other'] += monetary_value  # Add positive amounts to other income
+                print(f'{monetary_value} was added to other income.')
+            else:
+                categories['Other '] += monetary_value  # Add negative amounts to other spending
+                print(f' {monetary_value} was added to other spending.')
+
+
+# TODO: Loop the categories instead of hardcoding them
     netincome = totalincome - totalspent
     monthsummary = [(f'{data[0][0][3:5]}/{data[0][0][6:]}', f'{totalincome:.2f}', f'{totalspent:.2f}',
-                     f'{netincome:.2f}', f"{categories['Food']}",
-                     f"{categories['Medicine']:.2f}", f"{categories['Rent']}", f"{categories['Subsidies']}")]
+                     f'{netincome:.2f}', f"{categories['Personal']:.2f}", f"{categories['Subsidies']:.2f}",
+                     f"{categories['Other']:.2f}", f"{categories['Food']:.2f}", f"{categories['Utilities']:.2f}",
+                     f"{categories['Rent']:.2f}", f"{categories['Medicine']:.2f}", f"{categories['Clothes']:.2f}",
+                     f"{categories['Pets']:.2f}", f"{categories['Fun']:.2f}", f"{categories['Other ']:.2f}")]
 
     return monthsummary
 
 
-analyzeData = 0  # input('Read new data from CSV before analyzing monthly data?\n0 = No\n1 = Yes\n')
+analyzeData = 1  # input('Read new data from CSV before analyzing monthly data?\n0 = No\n1 = Yes\n')
 if analyzeData == 1:
     csvdata = readcsv()
     monthdata = addData(csvdata)
@@ -112,4 +130,6 @@ def analyze():
     plt.show()
 
 
-analyze()
+display_graphs = 0  # input('Create graphs based on data? \n0 = No\n1 = Yes\n')
+if display_graphs == 1:
+    analyze()
