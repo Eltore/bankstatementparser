@@ -10,6 +10,7 @@ import dash_table
 from dash.dependencies import Input, Output
 
 app = dash.Dash(__name__)
+server = app.server
 
 df = pd.read_csv('.data/analyzerOutput.csv', ';', index_col=0, parse_dates=True)
 print(df)
