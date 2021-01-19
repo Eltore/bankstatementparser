@@ -27,16 +27,23 @@
     box-shadow: 1px 3px 3px #555555;
 }
 
-.rounded-div-table {
+.rounded-div-graph {
     background: #FFFFFF;
     border-radius: 25px;
-    padding: 20px;
+    padding: 20px 3px 17px;
     box-shadow: 1px 3px 3px #555555;
+}
+
+.graph-title {
+    margin-bottom: -1px;
+    margin-top: -1px;
+    padding-left: 17px;
 }
 
 .net-spending {
     margin-top: -4px;
-    color: #3A7734;
+    /*color: #3A7734;*/
+    color: red;
     font-size: 2.4rem;
 }
 
@@ -257,15 +264,15 @@ a:hover {
 
 
 .main-svg{
-    font-family: "Open Sans Semi Bold"
+    font-family: "Open Sans Semi Bold", sans-serif
 }
 
 .gtitle{
-    font-family: "Open Sans Semi Bold" !important
+    font-family: "Open Sans Semi Bold", sans-serif !important
 }
 
 .g-title{
-    font-family: "Open Sans Semi Bold"
+    font-family: "Open Sans Semi Bold", sans-serif
 }
 
 
@@ -334,7 +341,7 @@ input[type="email"]:focus, input[type="number"]:focus, input[type="search"]:focu
 }
 label, legend {
     display: block;
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 fieldset {
     padding: 0;
@@ -551,7 +558,7 @@ a {
 
 #date {
     background-color: #1e1e1e;
-    font-family: "Open Sans Light";
+    font-family: "Open Sans Light", sans-serif;
     font-weight: 400;
     color: #dbdbdb;
     border: 0.5px solid #dbdbdb44;
@@ -581,16 +588,15 @@ a {
     border-radius: 3px;
     color: #dbdbdb;
     background: #1e1e1e;
-    background-color: #1e1e1e;
 }
 
 .SingleDatePickerInput.SingleDatePickerInput_1.SingleDatePickerInput__withBorder.SingleDatePickerInput__withBorder_2 {
-    border: 0.0px solid #dbdbdb;
+    border: 0px solid #dbdbdb;
     display: block;
 }
 
 .SingleDatePicker_1 {
-    border: 0.0px solid #dbdbdb;
+    border: 0px solid #dbdbdb;
     display: block;
 }
 

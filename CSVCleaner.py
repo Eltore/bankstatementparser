@@ -2,68 +2,75 @@ import csv
 import names
 
 
-def readcsv():
-    daterow = 1  # Change these three variables according to your csv file
-    amountrow = 2  # If these aren't in the same order in your csv, change
-    payeerow = 4  # the order in namecleaner(), too.
-    recipientrow = 5
+def read_csv(file_to_read):
+    date_row = 1  # Change these three variables according to your csv file
+    amount_row = 2  # If these aren't in the same order in your csv, change
+    payee_row = 4  # the order in name_cleaner(), too.
+    recipient_row = 5
+    path = '.data/CSVs/' + file_to_read + '.csv'
 
-    with open('.data/export.csv') as csvFile:
-        csvreader = csv.reader(csvFile, delimiter=';')
-        modifiedcsv = []
-        linecount = 0
+    with open(path) as csvFile:
+        csv_reader = csv.reader(csvFile, delimiter=';')
+        modified_csv = []
+        line_count = 0
 
-        for row in csvreader:
-            if linecount == 0:
-                print(f'Column names are \t{row[daterow]} | {row[amountrow]} | {row[recipientrow]}')
-                linestoadd = [row[daterow], row[amountrow], row[recipientrow]]
-                linecount += 1
+        for row in csv_reader:
+            if line_count == 0:
+                print(f'Column names are \t{row[date_row]} | {row[amount_row]} | {row[recipient_row]}')
+                lines_to_add = [row[date_row], row[amount_row], row[recipient_row]]
+                line_count += 1
 
-                modifiedcsv.append(linestoadd)
+                modified_csv.append(lines_to_add)
             else:
-                print(f'\t{row[daterow]} | {row[amountrow]} | {row[recipientrow]}.')
-                linecount += 1
+                print(f'\t{row[date_row]} | {row[amount_row]} | {row[recipient_row]}.')
+                line_count += 1
 
-                if row[amountrow][0] == "-":
-                    linestoadd = [row[daterow], row[amountrow], row[recipientrow]]
-                elif row[amountrow][0] == "+":
-                    linestoadd = [row[daterow], row[amountrow], row[payeerow]]
+                if row[amount_row][0] == "-":
+                    lines_to_add = [row[date_row], row[amount_row], row[recipient_row]]
+                elif row[amount_row][0] == "+":
+                    lines_to_add = [row[date_row], row[amount_row], row[payee_row]]
 
-                modifiedcsv.append(linestoadd)
-    writecsv(cleandata(modifiedcsv))
-    print(f'Processed {linecount} lines.')  # For debugging purposes
+                modified_csv.append(lines_to_add)
+    write_csv(clean_data(modified_csv), file_to_read)
+    print(f'Processed {line_count} lines.')  # For debugging purposes
 
 
-def writecsv(data):
-    with open('.data/output.csv', "w", newline='') as csv_file:
+def write_csv(data, file_to_read):
+    path = f'.data/output{file_to_read}.csv'
+
+    with open(path, "w", newline='') as csv_file:
         writer = csv.writer(csv_file, delimiter=';')
         for line in data:
             writer.writerows([line])
 
 
-def cleandata(data):
-    cleaneddata = []
+def clean_data(data):
+    cleaned_data = []
 
     for line in data:
-        cleaneddata.append(namecleaner(line))
+        cleaned_data.append(name_cleaner(line))
 
-    return cleaneddata
+    return cleaned_data
 
 
-def namecleaner(line):
+def name_cleaner(line):
     for name in names.listofnames:
-        titlecaseline = line[2].title()
+        titlecase_line = line[2].title()
 
-        if name in titlecaseline:
+        if name in titlecase_line:
             return [line[0], line[1], name]
 
     for k, v in names.specialcases.items():
-        titlecaseline = line[2].title()
+        titlecase_line = line[2].title()
 
-        if k in titlecaseline:
+        if k in titlecase_line:
             return [line[0], line[1], v]
 
     return line
 
 
-readcsv()
+filename = 'Not empty'
+while filename != '':
+    filename = input('Enter the name of the file to be cleaned (enter blank to quit):\n')
+    if not filename == '':
+        read_csv(filename)
