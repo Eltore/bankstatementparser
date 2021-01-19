@@ -4,13 +4,10 @@ import names
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-import seaborn as sns
-
-sns.set_theme()
 
 
 def readcsv():
-    with open('.data/output.csv') as csvFile:
+    with open('ExampleCleaned.csv') as csvFile:
         csvreader = csv.reader(csvFile, delimiter=';')
         modifiedcsv = []
         linecount = 0
@@ -28,7 +25,7 @@ def readcsv():
 
 
 def writecsv(data):
-    outputpath = '.data/analyzerOutput.csv'
+    outputpath = '.data/analyzerOutput.csv'  # Change to a preferred location
 
     if os.path.isfile(outputpath):
         print('\nOutput file found. Adding new data to it...')
@@ -40,8 +37,8 @@ def writecsv(data):
         print('Successfully added new data to the output file.')
     else:
         print("\nFile 'analyzerOutput.csv' could not be found. Creating a new one...")
-        data.insert(0, (['Date', 'Total income', 'Total spent', 'Net income', 'Personal', 'Subsidies', 'Other',
-                         'Food', 'Utilities', 'Rent', 'Medicine', 'Clothes', 'Pets', 'Fun', 'Other']))
+        data.insert(0, (['Date', 'Total income', 'Total spent', 'Net income', 'Personal', 'Subsidies', 'Other income',
+                         'Food', 'Utilities', 'Rent', 'Medicine', 'Clothes', 'Pets', 'Fun', 'Other spending']))
 
         with open(outputpath, "w", newline='') as csv_file:
             writer = csv.writer(csv_file, delimiter=';')
@@ -53,8 +50,9 @@ def writecsv(data):
 def addData(data):
     totalspent = 0
     totalincome = 0
-    categories = {'Personal': 0, 'Subsidies': 0, 'Other': 0,
-                  'Food': 0, 'Utilities': 0, 'Rent': 0, 'Medicine': 0, 'Clothes': 0, 'Pets': 0, 'Fun': 0, 'Other ': 0}
+    categories = {'Personal': 0, 'Subsidies': 0, 'Other income': 0,
+                  'Food': 0, 'Utilities': 0, 'Rent': 0, 'Medicine': 0, 'Clothes': 0, 'Pets': 0, 'Fun': 0,
+                  'Other spending': 0}
 
     for row in data:
         monetary_value = 0
@@ -77,10 +75,10 @@ def addData(data):
 
         if not category_was_found:
             if is_income:  # TODO: A better way to solve unknown names
-                categories['Other'] += monetary_value  # Add positive amounts to other income
+                categories['Other income'] += monetary_value  # Add positive amounts to other income
                 print(f'{monetary_value} was added to other income.')
             else:
-                categories['Other '] += monetary_value  # Add negative amounts to other spending
+                categories['Other spending'] += monetary_value  # Add negative amounts to other spending
                 print(f' {monetary_value} was added to other spending.')
 
 
@@ -117,9 +115,9 @@ def analyze():
 
     g, ax = plt.subplots(figsize=(7, 5))
 
-    sns.lineplot(data=df3,
-                 x='Date', y='Value',
-                 hue='Type', ax=ax)
+    # sns.lineplot(data=df3,
+    #              x='Date', y='Value',
+    #              hue='Type', ax=ax)
 
     ax.xaxis.set_major_locator(months)
     ax.xaxis.set_major_formatter(dateFormat)
