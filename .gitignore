@@ -2,3 +2,6 @@
 .idea
 venv
 names.py
+*.pyc
+.env
+.DS_Store
