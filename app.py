@@ -63,7 +63,12 @@ app.layout = html.Div(children=[
     html.Div(
         className="app-header",
         children=[
-            html.Div('Personal Finance Dashboard v0.1.2', className="app-header--title")
+            html.Div(children=[
+                html.Div('Personal Finance Dashboard v0.2.0', className="app-header--title",
+                         style={'display': 'inline-block'}),
+                html.Div('(Python, Pandas & Dash)',
+                         style={'display': 'inline-block', 'padding-left': '5px'})
+            ])
         ]
     ),
     html.Div(className='row',  # Define the row element
