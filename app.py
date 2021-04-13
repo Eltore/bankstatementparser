@@ -1,25 +1,21 @@
 import pandas as pd
-
 import plotly.express as px
-import plotly.graph_objects as go
-
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
-from dash.dependencies import Input, Output
 
 app = dash.Dash(__name__)
 server = app.server
 
-df = pd.read_csv('ExampleCleaned.csv', ';', index_col=0, parse_dates=True)
+df = pd.read_csv('ExampleCleaned.csv', ';', index_col=0, parse_dates=True)  # Set file location
 print(df)
 
 # Net spending information
-df_netspending = df[['Net income']]
-df_netspending_transformed = pd.DataFrame(df_netspending.stack()).reset_index()
-df_netspending_transformed.columns = ['Date', 'Type', 'Value']
-print(df_netspending_transformed)
+df_net_spending = df[['Personal']]
+df_net_spending_transformed = pd.DataFrame(df_net_spending.stack()).reset_index()
+df_net_spending_transformed.columns = ['Date', 'Type', 'Value']
+print(df_net_spending_transformed)
 
 # Spending graph
 df_spending = df.tail(6)
@@ -34,7 +30,7 @@ df_income_table = df_income_table.reset_index()
 df_income_table = df_income_table[3:6]  # Grab the income related entries
 df_copy = df.tail(3)
 df_income_table.columns = ['Income', pd.to_datetime(df_copy.index[0]).strftime('%b'), pd.to_datetime(df_copy.index[1])
-                           .strftime('%b'), pd.to_datetime(df_copy.index[2]).strftime('%b')]
+    .strftime('%b'), pd.to_datetime(df_copy.index[2]).strftime('%b')]
 df_income_table['Avg'] = df_income_table.mean(axis=1).round(2)  # Calculate the averages for the three months
 df_income_table['Avg/y'] = df.tail(12).T.reset_index().mean(axis=1).round(2)  # Calculate averages for the whole year
 print(df_income_table)
@@ -44,7 +40,7 @@ df_transposed = df.tail(3).T
 df_transposed = df_transposed.reset_index()
 df_transposed = df_transposed.tail(8)
 df_transposed.columns = ['Spending', pd.to_datetime(df_copy.index[0]).strftime('%b'), pd.to_datetime(df_copy.index[1])
-                         .strftime('%b'), pd.to_datetime(df_copy.index[2]).strftime('%b')]
+    .strftime('%b'), pd.to_datetime(df_copy.index[2]).strftime('%b')]
 df_transposed['Avg'] = df_transposed.mean(axis=1).round(2)
 df_transposed['Avg/y'] = df.tail(12).T.reset_index().mean(axis=1).round(2)
 print(df_transposed)
@@ -63,7 +59,12 @@ app.layout = html.Div(children=[
     html.Div(
         className="app-header",
         children=[
-            html.Div('Personal Finance Dashboard v0.1.2', className="app-header--title")
+            html.Div(children=[
+                html.Div('Personal Finance Dashboard v0.2.1', className="app-header--title",
+                         style={'display': 'inline-block'}),
+                html.Div('(Python, Pandas & Dash)',
+                         style={'display': 'inline-block', 'padding-left': '5px'})
+            ])
         ]
     ),
     html.Div(className='row',  # Define the row element
@@ -73,14 +74,15 @@ app.layout = html.Div(children=[
                          html.H1('Hello, Juho!')
                      ]),
                      html.Div(className='rounded-div', children=[
-                         html.Div('Your net income for last month was'),
+                         html.Div('Your personal spending for last month was'),
                          html.Div(className='net-spending', children=[
-                             html.Div(f"{df_netspending_transformed['Value'].iloc[-1]}")  # TODO: Cases for pos and neg
+                             html.Div(f"-{df_net_spending_transformed['Value'].iloc[-1]}")
                          ]),
                          html.Div(className='total-amounts', children=[
-                             html.Div(f"Total income: {df_spending_transformed.at[0, 'Value']} ",
-                                      style={'width': '49%', 'display': 'inline-block'}),
-                             html.Div(f"Total spending: {df_spending_transformed.at[1, 'Value']}",
+                             html.Div(
+                                 f"Total income: {df_spending_transformed['Value'].iloc[len(df_spending_transformed) - 2]} ",
+                                 style={'width': '49%', 'display': 'inline-block'}),
+                             html.Div(f"Total spending: {df_spending_transformed['Value'].iloc[-1]}",
                                       style={'width': '49%', 'display': 'inline-block'})
                          ])
                      ]),
@@ -102,12 +104,15 @@ app.layout = html.Div(children=[
                                  style_cell_conditional=[
                                      {
                                          'if': {'column_id': 'Income'},
+                                         'font-family': "sans-serif",
                                          'textAlign': 'left',
                                          'width': '180px'
                                      }
                                  ],
-                                 style_header=dict(backgroundColor="#FFFFFF"),
-                                 style_data=dict(backgroundColor="#FFFFFF")
+                                 style_header=dict(backgroundColor="#FFFFFF", font_family='sans-serif',
+                                                   fontWeight='bold'),
+                                 style_data=dict(backgroundColor="#FFFFFF", font_family='sans-serif'),
+                                 cell_selectable=False
                              )
                          ]),
                          html.Br(),
@@ -122,66 +127,31 @@ app.layout = html.Div(children=[
                                  style_cell_conditional=[
                                      {
                                          'if': {'column_id': 'Spending'},
+                                         'font-family': "sans-serif",
                                          'textAlign': 'left',
                                          'width': '180px'
                                      }
                                  ],
-                                 style_header=dict(backgroundColor="#FFFFFF"),
-                                 style_data=dict(backgroundColor="#FFFFFF")
+                                 style_header=dict(backgroundColor="#FFFFFF", font_family='sans-serif',
+                                                   fontWeight='bold'),
+                                 style_data=dict(backgroundColor="#FFFFFF", font_family='sans-serif'),
+                                 cell_selectable=False
                              )
                          ])
+                     ]),
+                     html.Div(className='rounded-div', children=[
+                         html.P(['This is a demo version of the dashboard. The data shown is gathered from a student '
+                                 'household. The dashboard tracks the household account so personal income here stands '
+                                 'for the amount of money that one has transferred to the household account from his '
+                                 'personal account. Thus, the personal spending meter is a bit useless in this '
+                                 'scenario but it exists for other use cases.', html.Br(), html.Br(), html.Br(),
+                                 'Check out my Github for other projects at ', html.Br(),
+                                 html.A('https://github.com/Eltore', href='https://github.com/Eltore')
+                                 ]),
                      ])
                  ])
              ])
 ])
-
-# app.layout = html.Div([
-#     html.Div(
-#         className="app-header",
-#         children=[
-#             html.Div('Personal Finance Dashboard v0.1', className="app-header--title")
-#         ]
-#     ),
-#     html.Div(
-#         children=html.Div([
-#             html.H2('Hello, Juho!'),
-#             html.Br(),
-#             dcc.Markdown(f"Your net income for last month was **{df_netspending_transformed.at[0, 'Value']}**"),
-#             # html.H2(f"{df_netspending_transformed.at[0, 'Value']}"),
-#             html.Div(f"Total income: {df_spending_transformed.at[0, 'Value']} "),
-#             html.Div(f"Total spending: {df_spending_transformed.at[1, 'Value']}")
-#         ])
-#     ),
-#
-#     html.Div(children=[
-#         dcc.Graph(id='spending_graph', figure=spending_graph, style={'display': 'inline-block'}),
-#         dash_table.DataTable(
-#             id='table',
-#             columns=[{"name": i, "id": i}
-#                      for i in df_transposed.columns],
-#             data=df_transposed.to_dict('records'),
-#             style_cell=dict(textAlign='left'),
-#             style_header=dict(backgroundColor="paleturquoise"),
-#             style_data=dict(backgroundColor="lavender")
-#         )
-#     ])
-# ])
-
-
-# @app.callback(
-#     [Output(component_id='output_container', component_property='children'),
-#      Output(component_id='net_spending_graph', component_property='figure')],
-#     [Input(component_id='slct_year', component_property='value')]
-# )
-# def update_graph():
-#     dff = df.Copy()
-#     dff = dff[dff['Total income', 'Total spent']]
-#     df3 = pd.DataFrame(dff.stack()).reset_index()
-#     df3.columns = ['Date', 'Type', 'Value']
-#     fig = px.line(df, x="Date", y="Value", color='Type')
-#
-#     return fig
-
 
 if __name__ == '__main__':
     app.run_server(debug=True)
