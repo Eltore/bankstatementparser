@@ -29,7 +29,7 @@ def read_csv(file_name, folder_path):
 
 
 def write_csv(data, folder_path):
-    output_path = folder_path + 'ExampleCleaned.csv'
+    output_path = folder_path + 'analyzer_output.csv'
 
     if os.path.isfile(output_path):
         print('\nOutput file found. Adding new data to it...')
@@ -40,7 +40,7 @@ def write_csv(data, folder_path):
                 writer.writerows([line])
         print('Successfully added new data to the output file.')
     else:
-        print("\nFile 'ExampleCleaned.csv' could not be found. Creating a new one...")
+        print("\nFile 'analyzer_output.csv' could not be found. Creating a new one...")
         data.insert(0, (['Date', 'Total income', 'Total spent', 'Net income', 'Personal', 'Subsidies', 'Other income',
                          'Food', 'Utilities', 'Rent', 'Medicine', 'Clothes', 'Pets', 'Fun', 'Other spending']))
 
