@@ -5,3 +5,4 @@ names.py
 *.pyc
 .env
 .DS_Store
+CSVParser.iml
