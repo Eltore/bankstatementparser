@@ -8,6 +8,8 @@ import dash_table
 app = dash.Dash(__name__)
 server = app.server
 
+app.title = 'Personal Finance Dashboard'
+
 df = pd.read_csv('ExampleCleaned.csv', ';', index_col=0, parse_dates=True)  # Set file location
 print(df)
 
@@ -60,7 +62,7 @@ app.layout = html.Div(children=[
         className="app-header",
         children=[
             html.Div(children=[
-                html.Div('Personal Finance Dashboard v0.2.1', className="app-header--title",
+                html.Div('Personal Finance Dashboard v0.3.1', className="app-header--title",
                          style={'display': 'inline-block'}),
                 html.Div('(Python, Pandas & Dash)',
                          style={'display': 'inline-block', 'padding-left': '5px'})
